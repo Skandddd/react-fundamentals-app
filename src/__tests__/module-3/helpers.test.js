@@ -1,4 +1,7 @@
-import { formatCreationDate, getCourseDuration } from "../../helpers";
+import {
+  formatCreationDate,
+  getCourseDuration,
+} from "../../components/Courses/components/CourseCard/helpers";
 
 test("formatCreationDate function returns formatted date", () => {
   const date = "2022/01/01";

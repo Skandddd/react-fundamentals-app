@@ -1,74 +1,67 @@
-// This component shows information about the current chosen course.
-
-// Module 1.
-// * Use template to show course's information:
-// ** ID of course;
-// ** Title;
-// ** Description;
-// ** Duration;
-// ** List of authors;
-// ** Creation date;
-// * use <Button /> component to replace CourseInfo component with Courses component
-// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-1/home-task/components#course-info
-
-// Module 2.
-// * render component by route '/courses/:courseId'
-// * use 'useParam' hook to get course id, remove prop 'showCourseId'
-// * remove 'onBack' prop
-// * use '<Link />' instead <Button /> component for 'BACK' button
-// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-2/home-task/components#course-info
-
-// Module 3.
-// * remove props 'coursesList', 'authorsList'
-// * use selectors from store/selectors.js to get coursesList, authorsList from store
-
 import React from "react";
-
-import { formatCreationDate, getCourseDuration } from "../../helpers";
-
+import { Button } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/common/Button/Button.jsx"; // Adjusted path
+import { getCourseDuration } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/components/Courses/components/CourseCard/helpers/getCourseDuration.js"; // Correct path
+import { formatCreationDate } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/components/Courses/components/CourseCard/helpers/formatCreationDate.js"; // Correct path
 import styles from "./styles.module.css";
 
-// props description
-// * 'coursesList' - list of all courses. You need it to get chosen course from the list
-// * 'authorsList' - list of all authors. You need it to get authors' names for chosen course
-// * 'showCourseId' - id of chosen course. Use it to find needed course on the 'coursesList'.
 export const CourseInfo = ({
   coursesList,
   authorsList,
   onBack,
   showCourseId,
 }) => {
-  // write your code here
+  // Find the course or provide a fallback
+  const course = coursesList.find((course) => course.id === showCourseId) || {
+    id: "N/A",
+    title: "Course Not Found",
+    description: "No course data available.",
+    authors: [],
+    duration: 0,
+    creationDate: new Date().toISOString(),
+  };
+
+  // Map author IDs to names, handle undefined and empty cases
+  const authorsNames =
+    course.authors
+      .map((authorId) => authorsList[authorId])
+      .filter((name) => name) // Remove undefined or falsy values
+      .join(", ") || "Unknown Authors"; // Fallback for empty list
+
+  // Format duration and date
+  const formattedDuration = getCourseDuration(course.duration);
+  const formattedDate = formatCreationDate(course.creationDate);
 
   return (
     <div className={styles.container} data-testid="courseInfo">
-      <h1>Course title</h1>
+      <h1 data-testid="courseInfoTitle">{course.title}</h1>
       <div className={styles.courseInfo}>
-        <p className={styles.description}>Course description</p>
-        <div>
-          <p>
-            <b>ID: </b>
-            id
-          </p>
-          <p>
-            <b>Duration: </b>
-            duration (use getCourseDuration)
-          </p>
-          <p>
-            <b>Created: </b>
-            creation date (use formatCreationDate)
-          </p>
-          <div>
-            <b>Authors</b>
-            <ul className={styles.authorsList}>
-              //use '.map' to render authors list with 'li' tag
-            </ul>
-          </div>
-        </div>
+        <p data-testid="courseInfoDescription">{course.description}</p>
+        <p data-testid="courseInfoId">
+          <b>ID: </b>
+          {course.id}
+        </p>
+        <p className={styles.authors} data-testid="courseInfoAuthors">
+          <b>Authors: </b>
+          {authorsNames.length > 50
+            ? `${authorsNames.slice(0, 50)}...`
+            : authorsNames}
+        </p>
+        <p data-testid="courseInfoDuration">
+          <b>Duration: </b>
+          {formattedDuration}
+        </p>
+        <p data-testid="courseInfoCreated">
+          <b>Created: </b>
+          {formattedDate}
+        </p>
       </div>
-      // Module 1: reuse Button component for 'onBack' functionality // Module
-      2: use 'react-router-dom' 'Link' component for button 'Back' and remove
-      'onBack' prop
+      <div className={styles.buttonsContainer}>
+        <Button
+          buttonText="Back"
+          handleClick={onBack}
+          data-testid="backButton"
+        />
+      </div>
     </div>
   );
 };

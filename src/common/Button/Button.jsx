@@ -1,10 +1,5 @@
 import React from "react";
-
-import styles from "./styles.module.css";
-
-// Module 1:
-// * use this component in components: Header, Courses
-// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-1/home-task/components#button-component
+import styles from "./styles.module.css"; // Подключите стили
 
 export const Button = ({
   buttonText,

@@ -1,7 +1,10 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { CourseInfo } from "../../components/CourseInfo";
-import { formatCreationDate, getCourseDuration } from "../../helpers";
+import {
+  formatCreationDate,
+  getCourseDuration,
+} from "../../components/Courses/components/CourseCard/helpers";
 import { MemoryRouter } from "react-router";
 
 const mockedCoursesList = [
