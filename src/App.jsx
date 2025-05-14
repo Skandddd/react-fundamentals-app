@@ -1,7 +1,21 @@
-import React, { useState } from "react";
 import styles from "./App.module.css";
-import { Header, Courses, CourseInfo } from "./components";
+import {
+  Header,
+  Courses,
+  CourseInfo,
+  Registration,
+  Login,
+  CourseForm,
+} from "./components";
 import { mockedCoursesList, mockedAuthorsList } from "./constants";
+import React, { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 
 // Module 1:
 // * use mockedAuthorsList and mockedCoursesList mocked data
@@ -32,33 +46,96 @@ import { mockedCoursesList, mockedAuthorsList } from "./constants";
 // * get authorized user info by 'user/me' GET request if 'localStorage' contains token
 
 function App() {
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userName, setUserName] = useState(localStorage.getItem("userName"));
+  const [courses, setCourses] = useState(mockedCoursesList);
+  const [authors, setAuthors] = useState(mockedAuthorsList);
 
-  const handleShowCourse = (courseId) => {
-    setSelectedCourseId(courseId);
+  useEffect(() => {
+    const tokenFromStorage = localStorage.getItem("token");
+    const userNameFromStorage = localStorage.getItem("userName");
+
+    setToken(tokenFromStorage);
+    setUserName(userNameFromStorage);
+
+    if (location.pathname === "/" || location.pathname === "") {
+      navigate(tokenFromStorage ? "/courses" : "/login", { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    setToken(null);
+    setUserName(null);
+    navigate("/login");
   };
 
-  const handleBackToCourses = () => {
-    setSelectedCourseId(null);
+  const handleCreateCourse = (newCourse) => {
+    setCourses((prev) => [...prev, newCourse]);
   };
+
+  const handleCreateAuthor = (newAuthor) => {
+    setAuthors((prev) => [...prev, newAuthor]);
+  };
+
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/registration";
 
   return (
     <div className={styles.wrapper}>
-      <Header />
-      {selectedCourseId ? (
-        <CourseInfo
-          coursesList={mockedCoursesList}
-          authorsList={mockedAuthorsList}
-          onBack={handleBackToCourses}
-          showCourseId={selectedCourseId}
-        />
-      ) : (
-        <Courses
-          coursesList={mockedCoursesList}
-          authorsList={mockedAuthorsList}
-          handleShowCourse={handleShowCourse}
-        />
+      {!isAuthPage && token && (
+        <Header userName={userName} onLogout={handleLogout} />
       )}
+      <div className={styles.container}>
+        <Routes>
+          <Route
+            path="/login"
+            element={<Login setToken={setToken} setUserName={setUserName} />}
+          />
+          <Route path="/registration" element={<Registration />} />
+          <Route
+            path="/courses"
+            element={
+              token ? (
+                <Courses coursesList={courses} authorsList={authors} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/courses/:courseId"
+            element={
+              token ? (
+                <CourseInfo coursesList={courses} authorsList={authors} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/courses/add"
+            element={
+              token ? (
+                <CourseForm
+                  authorsList={authors}
+                  createCourse={handleCreateCourse}
+                  createAuthor={handleCreateAuthor}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="*"
+            element={<Navigate to={token ? "/courses" : "/login"} />}
+          />
+        </Routes>
+      </div>
     </div>
   );
 }
