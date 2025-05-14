@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./App.module.css";
+import { Header, Courses, CourseInfo } from "./components";
+import { mockedCoursesList, mockedAuthorsList } from "./constants";
 
 // Module 1:
 // * use mockedAuthorsList and mockedCoursesList mocked data
@@ -10,7 +12,7 @@ import styles from "./App.module.css";
 // Module 2:
 // * use mockedAuthorsList and mockedCoursesList mocked data
 // * remove useState for selected courseId
-// * use hook useState for storing list of courses and authors 
+// * use hook useState for storing list of courses and authors
 // * import Routes and Route from 'react-router-dom'
 // * Add Routes to the container div (do not include Header to the Routes since header will not be changed with pages)
 // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-2/home-task/components#add-the-router-to-the-app-component
@@ -30,12 +32,33 @@ import styles from "./App.module.css";
 // * get authorized user info by 'user/me' GET request if 'localStorage' contains token
 
 function App() {
-  // write your code here
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
+
+  const handleShowCourse = (courseId) => {
+    setSelectedCourseId(courseId);
+  };
+
+  const handleBackToCourses = () => {
+    setSelectedCourseId(null);
+  };
 
   return (
     <div className={styles.wrapper}>
-      {/* place Header component */}
-      <div className={styles.container}>{/* place other components */}</div>
+      <Header />
+      {selectedCourseId ? (
+        <CourseInfo
+          coursesList={mockedCoursesList}
+          authorsList={mockedAuthorsList}
+          onBack={handleBackToCourses}
+          showCourseId={selectedCourseId}
+        />
+      ) : (
+        <Courses
+          coursesList={mockedCoursesList}
+          authorsList={mockedAuthorsList}
+          handleShowCourse={handleShowCourse}
+        />
+      )}
     </div>
   );
 }

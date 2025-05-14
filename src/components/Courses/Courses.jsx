@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
 import styles from "./styles.module.css";
+import { CourseCard } from "./components";
+import { formatCreationDate, getCourseDuration } from "../../helpers";
+import { Button } from "../../common";
+import { SearchBar } from "../SearchBar/SearchBar";
+import { EmptyList } from "../EmptyList/EmptyList";
 
 // Module 1:
 // * render list of components using 'CourseCard' component for each course
@@ -33,17 +38,64 @@ import styles from "./styles.module.css";
 //   ** CourseForm should be shown after a click on the "Add new course" button.
 
 export const Courses = ({ coursesList, authorsList, handleShowCourse }) => {
-  // write your code here
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredCourses, setFilteredCourses] = useState(coursesList);
 
-  // for EmptyCourseList component container use data-testid="emptyContainer" attribute
-  // for button in EmptyCourseList component add data-testid="addCourse" attribute
+  const handleSearch = () => {
+    const term = searchTerm.trim().toLowerCase();
+
+    if (term === "") {
+      setFilteredCourses(coursesList);
+      return;
+    }
+
+    const filtered = coursesList.filter(
+      (course) =>
+        course.title.toLowerCase().includes(term) ||
+        course.id.toLowerCase().includes(term)
+    );
+
+    setFilteredCourses(filtered);
+  };
+
+  const handleSearchTermChange = (term) => {
+    setSearchTerm(term);
+    if (term === "") {
+      setFilteredCourses(coursesList);
+    }
+  };
+
+  const courses = filteredCourses.map((course) => ({
+    id: course.id,
+    title: course.title,
+    description: course.description,
+    creationDate: course.creationDate,
+    duration: course.duration,
+    authors: course.authors,
+  }));
 
   return (
     <>
       <div className={styles.panel}>
-        // reuse Button component for 'ADD NEW COURSE' button
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearchTermChange={handleSearchTermChange}
+          onSearch={handleSearch}
+        />
+        <Button buttonText="ADD NEW COURSE" />
       </div>
-      // use '.map' array method to render all courses. Use CourseCard component
+      {courses.length === 0 ? (
+        <EmptyList />
+      ) : (
+        courses.map((course) => (
+          <CourseCard
+            key={course.id}
+            course={course}
+            authorsList={authorsList}
+            handleShowCourse={handleShowCourse}
+          />
+        ))
+      )}
     </>
   );
 };

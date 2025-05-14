@@ -37,43 +37,64 @@
 
 import React from "react";
 
-import { getCourseDuration, formatCreationDate } from "../../../../helpers";
-
 import deleteIcon from "../../../../assets/deleteButtonIcon.svg";
 import editIcon from "../../../../assets/editButtonIcon.svg";
 
 import styles from "./styles.module.css";
+import { Button } from "../../../../common";
+
+import { formatCreationDate, getCourseDuration } from "../../../../helpers";
 
 export const CourseCard = ({ course, handleShowCourse, authorsList }) => {
   // write your code here
+  const maxLineLength = 50;
+  const authors = course.authors
+    .map(
+      (authorId) => authorsList.find((author) => author.id === authorId)?.name
+    )
+    .filter(Boolean)
+    .join(", ");
+
+  const truncatedAuthors =
+    authors.length > maxLineLength
+      ? authors.slice(0, maxLineLength) + "..."
+      : authors;
 
   return (
     <div className={styles.cardContainer} data-testid="courseCard">
       <div className={styles.cardText}>
-        <h2>Title</h2>
-        <p>Description</p>
+        <h2>{course.title}</h2>
+        <p>{course.description}</p>
       </div>
       <div className={styles.cardDetails}>
         <p>
           <b>Authors: </b>
-          authors list
+          {truncatedAuthors}
         </p>
         <p>
           <b>Duration:</b>
-          <span>duration</span>
+          <span>{getCourseDuration(course.duration)}</span>
         </p>
         <p>
           <b>Created: </b>
-          <span>date</span>
+          <span>{formatCreationDate(course.creationDate)}</span>
         </p>
         <div className={styles.buttonsContainer}>
           {/* 
-				reuse Button component for 'Show course' button 
-				reuse Button	component with deleteButtonIcon from 'src/assets' for 'Delete' button
-						with data-testid="deleteCourse" 
-				reuse Button component wrapped with Link from react-router with editButtonIcon from 'src/assets' for 'Update' button with
-						data-testid="updateCourse" 
-			*/}
+            reuse Button component for 'Show course' button 
+            reuse Button	component with deleteButtonIcon from 'src/assets' for 'Delete' button
+                with data-testid="deleteCourse" 
+            reuse Button component wrapped with Link from react-router with editButtonIcon from 'src/assets' for 'Update' button with
+                data-testid="updateCourse" 
+			    */}
+          <Button
+            buttonText={"Show course"}
+            handleClick={() => {
+              handleShowCourse(course.id);
+            }}
+          />
+          <Button src={editIcon} handleClick={() => {}} />
+          <Button src={deleteIcon} handleClick={() => {}}></Button>
         </div>
       </div>
     </div>
