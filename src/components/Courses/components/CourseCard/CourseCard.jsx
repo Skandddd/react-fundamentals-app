@@ -1,50 +1,79 @@
+// Module 1.
+// * figma link: https://www.figma.com/design/m0N0SGLclqUEGR6TUNvyn9/Fundamentals-Courses?node-id=2905-67147&t=OXbHXwMixWTtxRSw-1
+// * render this component inside 'Courses' component
+// * this component should display single course info:
+//   ** title;
+//   ** description;
+//   ** authors list. Authors' names should be displayed on the one line, add '...' if authors' names do not fit on one line.
+//   ** duration (format: hh:mm + 'hours'). Create function 'src/helpers/getCourseDuration.js' for duration mapping;
+//   ** creation date (format: dd.mm.yyyy). Create function 'src/helpers/formatCreationDate.js' for date formatting;
+//   ** show course button. Render 'CourseInfo' component with course's data instead of 'Courses' component
+// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-1/home-task/components#coursecard-component
+// * find course's authors in the 'authorsList' by ids
+
+// Module 2.
+// * remove prop 'handleShowCourse' => use 'Link' from 'react-router-dom' instead
+
+// Module 3.
+// * add two new buttons: update and delete'. Use icons from 'src/assets/...'.
+// * remove course from the store by 'delete' button click
+// * no functionality for 'update' button for now
+// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#coursecard-component
+// * remove prop 'authorsList' => use 'getAuthorsSelector' to get authors from store
+
+// Module 4.
+// * show 'delete' and 'update' buttons only for ADMIN user
+// * make delete request by 'delete' button click
+// * use 'deleteCourseService' from 'src/services.js' and 'deleteCourseThunk' thunk from 'src/store/thinks/coursesThunk.js'
+// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-4/home-task/components#coursecard-component
+
+// Module 5:
+// * proposed cases for unit tests:
+//   ** CourseCard should display title.
+//   ** CourseCard should display description.
+//   ** CourseCard should display duration in the correct format.
+//   ** CourseCard should display authors list.
+//   ** CourseCard should display created date in the correct format.
+
 import React from "react";
-import { Button } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/common/Button/Button.jsx";
-import { getCourseDuration } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/components/Courses/components/CourseCard/helpers/getCourseDuration.js"; // Correct path
-import { formatCreationDate } from "C:/Users/Skand/WebstormProjects/react-fundamentals-app/src/components/Courses/components/CourseCard/helpers/formatCreationDate.js";
+
+import { getCourseDuration, formatCreationDate } from "../../../../helpers";
+
+import deleteIcon from "../../../../assets/deleteButtonIcon.svg";
+import editIcon from "../../../../assets/editButtonIcon.svg";
+
 import styles from "./styles.module.css";
 
 export const CourseCard = ({ course, handleShowCourse, authorsList }) => {
-  const { title, description, authors, duration, creationDate, id } = course;
-
-  // Get authors' names from authorsList by IDs, handle undefined and empty cases
-  const authorsNames =
-    authors
-      .map((authorId) => authorsList[authorId])
-      .filter((name) => name) // Remove undefined or falsy values
-      .join(", ") || "Unknown Authors"; // Fallback for empty list
-
-  // Format duration and date
-  const formattedDuration = getCourseDuration(duration);
-  const formattedDate = formatCreationDate(creationDate);
+  // write your code here
 
   return (
     <div className={styles.cardContainer} data-testid="courseCard">
       <div className={styles.cardText}>
-        <h2 data-testid="courseTitle">{title}</h2>
-        <p data-testid="courseDescription">{description}</p>
+        <h2>Title</h2>
+        <p>Description</p>
       </div>
       <div className={styles.cardDetails}>
-        <p className={styles.authors} data-testid="courseAuthors">
+        <p>
           <b>Authors: </b>
-          {authorsNames.length > 50
-            ? `${authorsNames.slice(0, 50)}...`
-            : authorsNames}
+          authors list
         </p>
-        <p data-testid="courseDuration">
-          <b>Duration: </b>
-          <span>{formattedDuration}</span>
+        <p>
+          <b>Duration:</b>
+          <span>duration</span>
         </p>
-        <p data-testid="courseCreated">
+        <p>
           <b>Created: </b>
-          <span>{formattedDate}</span>
+          <span>date</span>
         </p>
         <div className={styles.buttonsContainer}>
-          <Button
-            buttonText="Show Course"
-            handleClick={() => handleShowCourse(id)}
-            data-testid="showCourseButton"
-          />
+          {/* 
+				reuse Button component for 'Show course' button 
+				reuse Button	component with deleteButtonIcon from 'src/assets' for 'Delete' button
+						with data-testid="deleteCourse" 
+				reuse Button component wrapped with Link from react-router with editButtonIcon from 'src/assets' for 'Update' button with
+						data-testid="updateCourse" 
+			*/}
         </div>
       </div>
     </div>
