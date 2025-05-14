@@ -11,17 +11,29 @@
 // ** PAY ATTATION ** token should be removed from localStorage immediately inside logout handler function
 // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-2/home-task/components#header
 // src/components/Header/Header.js
+
+// Module 3:
+// * use selector from store/selectors.js to get user's name from the store
+// * remove user's data from the store. Use action 'removeUserData' from the 'src/store/slices/userSlice by LOGOUT button click
+// * remove token from localStorage by LOGOUT button click.
+// ** PAY ATTATION ** token should be removed from localStorage immediately inside logout handler function
+// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#header
 import React from "react";
 import styles from "./styles.module.css";
 import { Logo } from "./components";
 import { Button } from "../../common";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserNameSelector } from "../../store/selectors";
+import { removeUserData } from "../../store/slices/userSlice";
 
-export const Header = ({ userName = "Harry Potter", onLogout }) => {
+export const Header = () => {
+  const dispatch = useDispatch();
+  const userName = useSelector(getUserNameSelector);
   const token = localStorage.getItem("token");
 
   const handleLogoutClick = () => {
     localStorage.removeItem("token");
-    if (onLogout) onLogout();
+    dispatch(removeUserData());
   };
 
   return (
@@ -36,12 +48,6 @@ export const Header = ({ userName = "Harry Potter", onLogout }) => {
     </div>
   );
 };
-// Module 3:
-// * use selector from store/selectors.js to get user's name from the store
-// * remove user's data from the store. Use action 'removeUserData' from the 'src/store/slices/userSlice by LOGOUT button click
-// * remove token from localStorage by LOGOUT button click.
-// ** PAY ATTATION ** token should be removed from localStorage immediately inside logout handler function
-// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#header
 
 // Module 4:
 // make a request to lod out on 'LOGOUT' button click

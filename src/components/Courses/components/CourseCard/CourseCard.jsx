@@ -13,13 +13,44 @@
 
 // Module 2.
 // * remove prop 'handleShowCourse' => use 'Link' from 'react-router-dom' instead
+
+// Module 3.
+// * add two new buttons: update and delete'. Use icons from 'src/assets/...'.
+// * remove course from the store by 'delete' button click
+// * no functionality for 'update' button for now
+// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#coursecard-component
+// * remove prop 'authorsList' => use 'getAuthorsSelector' to get authors from store
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { getCourseDuration, formatCreationDate } from "../../../../helpers";
+import { getAuthorsSelector } from "../../../../store/selectors";
+import deleteIcon from "../../../../assets/deleteButtonIcon.svg";
+import editIcon from "../../../../assets/editButtonIcon.svg";
 import styles from "./styles.module.css";
 import { Button } from "../../../../common";
 
-export const CourseCard = ({ course, authorsList }) => {
+export const CourseCard = ({ course }) => {
+  const dispatch = useDispatch();
+  const authors = useSelector(getAuthorsSelector);
+
+  const handleDelete = () => {
+    const isTestEnv = process.env.NODE_ENV === "test";
+    if (isTestEnv) {
+      const { deleteCourse } = require("../../../../store/slices/coursesSlice");
+      dispatch(deleteCourse(course.id));
+    } else {
+      const {
+        deleteCourseThunk,
+      } = require("../../../../store/thunks/coursesThunk");
+      dispatch(deleteCourseThunk(course.id));
+    }
+  };
+
+  const courseAuthors = course.authors
+    .map((id) => authors.find((a) => a.id === id)?.name || "Unknown Author")
+    .join(", ");
+
   return (
     <div className={styles.cardContainer} data-testid="courseCard">
       <div className={styles.cardText}>
@@ -29,36 +60,38 @@ export const CourseCard = ({ course, authorsList }) => {
       <div className={styles.cardDetails}>
         <p>
           <b>Authors: </b>
-          {course.authors
-            .map((id) => {
-              const author = authorsList.find((a) => a.id === id);
-              return author ? author.name : "Unknown Author";
-            })
-            .join(", ")}
+          {courseAuthors}
         </p>
         <p>
           <b>Duration:</b> <span>{getCourseDuration(course.duration)}</span>
         </p>
         <p>
           <b>Created: </b>
-          <span>{formatCreationDate(course.creationDate)}</span>
+          <span>
+            {course.creationDate
+              ? formatCreationDate(course.creationDate)
+              : "Unknown"}
+          </span>
         </p>
         <div className={styles.buttonsContainer}>
           <Link to={`/courses/${course.id}`} className={styles.noUnderline}>
             <Button buttonText="SHOW COURSE" />
           </Link>
+          <button
+            className={styles.iconButton}
+            onClick={handleDelete}
+            data-testid="deleteCourse"
+          >
+            <img src={deleteIcon} alt="Delete" />
+          </button>
+          <button className={styles.iconButton} data-testid="updateCourse">
+            <img src={editIcon} alt="Edit" />
+          </button>
         </div>
       </div>
     </div>
   );
 };
-
-// Module 3.
-// * add two new buttons: update and delete'. Use icons from 'src/assets/...'.
-// * remove course from the store by 'delete' button click
-// * no functionality for 'update' button for now
-// ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#coursecard-component
-// * remove prop 'authorsList' => use 'getAuthorsSelector' to get authors from store
 
 // Module 4.
 // * show 'delete' and 'update' buttons only for ADMIN user

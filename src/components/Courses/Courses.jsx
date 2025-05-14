@@ -11,60 +11,52 @@
 // * navigate to this component if 'localStorage' contains user's token
 // * navigate to the route courses/add by clicking 'Add New Course' button, use 'Link' component from 'react-router-dom'
 // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-2/home-task/components#courses
-import React, { useEffect } from "react";
-import styles from "./styles.module.css";
-import { Button } from "../../common";
-import { CourseCard } from "./components";
-import { Link, useNavigate } from "react-router-dom";
-
-export const Courses = ({ coursesList, authorsList }) => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  if (coursesList.length === 0) {
-    return <EmptyCourseList />;
-  }
-
-  return (
-    <>
-      <div className={styles.panel}>
-        <Link to="/courses/add" className={styles.noUnderline}>
-          <Button buttonText="ADD NEW COURSE" data-testid="addCourse" />
-        </Link>
-      </div>
-
-      {coursesList.map((course) => (
-        <CourseCard key={course.id} course={course} authorsList={authorsList} />
-      ))}
-    </>
-  );
-};
-
-const EmptyCourseList = () => {
-  return (
-    <div className={styles.empty} data-testid="emptyContainer">
-      <h2>Your List Is Empty</h2>
-      <p>Please use "add new course" button to add your first course</p>
-      <div className={styles.buttonContainer}>
-        <Link to="/courses/add" className={styles.noUnderline}>
-          <Button buttonText="ADD NEW COURSE" data-testid="addCourse" />
-        </Link>
-      </div>
-    </div>
-  );
-};
 
 // Module 3:
 // * stop using mocked courses and authors data
 // * delete props 'coursesList' and 'authorsList'
 // * use useSelector to get courses and authors from the store
 // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#courses-component
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { Button } from "../../common/Button/Button";
+import { CourseCard } from "./components";
+import styles from "./styles.module.css";
+
+export const Courses = () => {
+  const courses = useSelector((state) => state.courses);
+  const user = useSelector((state) => state.user);
+
+  if (!courses || courses.length === 0) {
+    return (
+      <div className={styles.emptyContainer}>
+        <h2>Your List Is Empty</h2>
+        <Link to="/courses/add" className={styles.noUnderline}>
+          <Button buttonText="Add new course" data-testid="addCourse" />
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>Courses</h1>
+        {user?.isAuth && (
+          <Link to="/courses/add" className={styles.noUnderline}>
+            <Button buttonText="Add new course" data-testid="addCourse" />
+          </Link>
+        )}
+      </div>
+      <div className={styles.courseList}>
+        {courses.map((course) => (
+          <CourseCard key={course.id} course={course} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // Module 4:
 // navigate to '/courses/add' route by clicking 'ADD NEW COURSE' button in the 'EmptyCourseList'.

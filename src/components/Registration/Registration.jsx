@@ -12,9 +12,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./styles.module.css";
-import { Input } from "../../common/Input/Input";
-import { Button } from "../../common/Button/Button";
 import { createUser } from "../../services";
+import { Button } from "../../common/Button/Button";
 
 export const Registration = () => {
   const navigate = useNavigate();
@@ -56,43 +55,49 @@ export const Registration = () => {
       <h1>Registration</h1>
       <div className={styles.formContainer}>
         <form onSubmit={handleSubmit} data-testid="registrationForm">
-          <Input
-            labelText="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholderText="Enter your name"
-            data-testid="nameInput"
-          />
+          <label>
+            Name
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              data-testid="nameInput"
+            />
+          </label>
           {errors.name && (
             <div className={styles.error} data-testid="nameError">
               {errors.name}
             </div>
           )}
 
-          <Input
-            labelText="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholderText="Enter your email"
-            data-testid="emailInput"
-          />
+          <label>
+            Email
+            <input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              data-testid="emailInput"
+            />
+          </label>
           {errors.email && (
             <div className={styles.error} data-testid="emailError">
               {errors.email}
             </div>
           )}
 
-          <Input
-            labelText="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholderText="Enter password"
-            data-testid="passwordInput"
-          />
+          <label>
+            Password
+            <input
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              data-testid="passwordInput"
+            />
+          </label>
           {errors.password && (
             <div className={styles.error} data-testid="passwordError">
               {errors.password}

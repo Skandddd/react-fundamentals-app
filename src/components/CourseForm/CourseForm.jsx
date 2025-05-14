@@ -12,24 +12,36 @@
 // //   ** add validation to the fields
 // //   ** add new course to the 'coursesList' and navigate to the '/courses' page => new course should be in the courses list
 // // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-2/home-task/components#add-new-course
-import React, { useState } from "react";
+
+// // Module 3.
+// // * remove props - authorsList, createCourse, createAuthor
+// // * use selector from store/selectors.js to get authorsList from store
+// // * save new course to the store. Use action 'saveCourse' from 'src/store/slices/coursesSlice'
+// // * save new author to the store. Use action 'saveAuthor' from 'src/store/slices/authorsSlice'
+// // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#add-new-course
+import React, { useState, useEffect } from "react";
 import styles from "./styles.module.css";
 import { Input, Button } from "../../common";
 import { getCourseDuration } from "../../helpers";
-import { AuthorItem } from "./components/AuthorItem/";
-import { CreateAuthor } from "./components/CreateAuthor/";
+import { AuthorItem } from "./components/AuthorItem/AuthorItem";
+import { CreateAuthor } from "./components/CreateAuthor/CreateAuthor";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthorsSelector } from "../../store/selectors";
+import { saveCourse } from "../../store/slices/coursesSlice";
 
-export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
+export const CourseForm = () => {
+  const dispatch = useDispatch();
+  const authorsList = useSelector(getAuthorsSelector);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
-  const [availableAuthors, setAvailableAuthors] = useState(authorsList);
+  const [availableAuthors, setAvailableAuthors] = useState([]);
   const [courseAuthors, setCourseAuthors] = useState([]);
 
-  const handleCreateAuthor = (newAuthor) => {
-    setAvailableAuthors([...availableAuthors, newAuthor]);
-    createAuthor(newAuthor);
-  };
+  useEffect(() => {
+    setAvailableAuthors(authorsList);
+  }, [authorsList]);
 
   const handleCreateCourse = (e) => {
     e.preventDefault();
@@ -45,15 +57,14 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
     }
 
     const newCourse = {
-      id: String(Date.now()),
       title,
       description,
-      creationDate: new Date().toLocaleDateString("en-GB"),
       duration: Number(duration),
       authors: courseAuthors.map((a) => a.id),
     };
 
-    createCourse(newCourse);
+    dispatch(saveCourse(newCourse));
+
     setTitle("");
     setDescription("");
     setDuration("");
@@ -112,24 +123,22 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
               data-testid="durationInput"
             />
             <div className={styles.durationOutput}>
-              {getCourseDuration(Number(duration))}
+              {getCourseDuration(Number(duration))} hours
             </div>
 
             <h3>Authors</h3>
-            <CreateAuthor onCreateAuthor={handleCreateAuthor} />
+            <CreateAuthor />
 
-            <div>
-              <h4 className={styles.subTitle}>Authors List</h4>
-              {availableAuthors.map((author) => (
-                <AuthorItem
-                  key={author.id}
-                  name={author.name}
-                  buttonText="Add author"
-                  onClick={() => addAuthorToCourse(author)}
-                  testId="addAuthor"
-                />
-              ))}
-            </div>
+            <h4 className={styles.subTitle}>Authors List</h4>
+            {availableAuthors.map((author) => (
+              <AuthorItem
+                key={author.id}
+                name={author.name}
+                buttonText="Add author"
+                onClick={() => addAuthorToCourse(author)}
+                testId="addAuthor"
+              />
+            ))}
           </div>
 
           <div className={styles.rightColumn}>
@@ -142,6 +151,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
                   buttonText="Delete author"
                   onClick={() => removeAuthorFromCourse(author)}
                   testId="deleteAuthor"
+                  isRemovable
                 />
               ))
             ) : (
@@ -166,13 +176,6 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
     </div>
   );
 };
-
-// // Module 3.
-// // * remove props - authorsList, createCourse, createAuthor
-// // * use selector from store/selectors.js to get authorsList from store
-// // * save new course to the store. Use action 'saveCourse' from 'src/store/slices/coursesSlice'
-// // * save new author to the store. Use action 'saveAuthor' from 'src/store/slices/authorsSlice'
-// // ** TASK DESCRIPTION ** - https://react-fundamentals-tasks.vercel.app/docs/module-3/home-task/components#add-new-course
 
 // // Module 4.
 // // * render this component only for ADMIN user
